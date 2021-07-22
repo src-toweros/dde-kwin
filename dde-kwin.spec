@@ -1,12 +1,12 @@
-%global sname deepin-kwin
+%global repo dde-kwin
 
 Name:           dde-kwin
-Version:        5.0.13+c1
-Release:        6
+Version:        5.1.0.27
+Release:        1
 Summary:        KWin configuration for Deepin Desktop Environment
 License:        GPLv3+
 URL:            https://github.com/linuxdeepin/%{name}
-Source0:        %{name}_%{version}.orig.tar.xz
+Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  kwin-devel
@@ -16,8 +16,15 @@ BuildRequires:  libepoxy-devel
 BuildRequires:  dtkcore-devel
 BuildRequires:  kf5-kwayland-devel
 BuildRequires:  kf5-kglobalaccel-devel
+BuildRequires:  kf5-kdeclarative-devel
+BuildRequires:  kf5-kservice-devel
+BuildRequires:  kf5-plasma-devel
+BuildRequires:  kdecoration-devel
+BuildRequires:  kf5-ktextwidgets-devel
+
 BuildRequires:  cmake(KDecoration2)
 BuildRequires:  qt5-linguist
+# for libQt5EdidSupport.a
 BuildRequires:  qt5-qtbase-static
 BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  qt5-qtdeclarative-devel
@@ -25,7 +32,9 @@ BuildRequires:  dtkgui-devel
 BuildRequires:  kf5-ki18n-devel
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 Requires:       dde-qt5integration%{?_isa}
+#Requires:       kwin%{?_isa} >= 5.17
 Requires:       kwin%{?_isa} >= 5.15
+# since F31
 Obsoletes:      deepin-wm <= 1.9.38
 Obsoletes:      deepin-wm-switcher <= 1.1.9
 Obsoletes:      deepin-metacity <= 3.22.24
@@ -71,6 +80,11 @@ export PATH=%{_qt5_bindir}:$PATH
 %install
 %make_install INSTALL_ROOT=%{buildroot}
 chmod 755 %{buildroot}%{_bindir}/kwin_no_scale
+install debian/dde-kwin.postinst  %{buildroot}%{_datadir}/kwin/scripts/
+chmod 755 %{buildroot}%{_datadir}/kwin/scripts/dde-kwin.postinst
+ 
+%post
+bash -x %{_datadir}/kwin/scripts/dde-kwin.postinst
 
 %ldconfig_scriptlets
 
@@ -83,6 +97,7 @@ chmod 755 %{buildroot}%{_bindir}/kwin_no_scale
 %{_libdir}/libkwin-xcb.so.*
 %{_qt5_plugindir}/org.kde.kdecoration2/libdeepin-chameleon.so
 %{_qt5_plugindir}/platforms/lib%{name}-xcb.so
+%{_qt5_plugindir}/platforms/libdde-kwin-wayland.so
 %{_datadir}/dde-kwin-xcb/
 %{_datadir}/dbus-1/services/*.service
 %{_datadir}/dbus-1/interfaces/*.xml
@@ -99,5 +114,8 @@ chmod 755 %{buildroot}%{_bindir}/kwin_no_scale
 %{_includedir}/%{name}
 
 %changelog
+* Thu Jul 08 2021 weidong <weidong@uniontech.com> - 5.1.0.27-1
+- Update 5.1.0.27
+
 * Thu Jul 30 2020 openEuler Buildteam <buildteam@openeuler.org> - 5.0.13+c1-6
 - Package init
